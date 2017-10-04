@@ -47,13 +47,13 @@
     <p>
         I am thinking of a number from 1 to 10. <br />
         You must guess what it is in three tries.<br />
-        <button id="reset_button">Reset Game</button>
+        <button type="button" id="reset_button">Reset Game</button>
         <hr>
 
         <form action="#">
             <meta name="csrf-token" content="{{ csrf_token() }}">
             <label>Enter a guess </label>
-            <input type="number" id="number_guess"><input type="submit" value="Guess it" id="guess_button">
+            <input type="number" id="number_guess"><input type="button" value="Guess it" id="guess_button">
         </form>
     </p>
 
