@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'NumberGameController@makeGuess')->name('makeGuess');
 
 Route::post('/makeGuess', 'NumberGameController@makeGuess')->name('makeGuess');
 Route::get('/startGame', 'NumberGameController@startGame')->name('startGame');
