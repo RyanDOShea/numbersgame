@@ -11,8 +11,9 @@
 |
 */
 
-Route::get('/', 'NumberGameController@makeGuess')->name('makeGuess');
+Route::get('/', 'NumberGameController@startGame')->name('startGame');
+
+Route::get('/startGame', 'NumberGameController@startGame')->name('startGame');
 
 Route::post('/makeGuess', 'NumberGameController@makeGuess')->name('makeGuess');
-Route::get('/startGame', 'NumberGameController@startGame')->name('startGame');
 Route::get('/resetGame', 'NumberGameController@resetGame')->name('resetGame');
