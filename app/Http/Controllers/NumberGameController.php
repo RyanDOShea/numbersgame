@@ -78,6 +78,7 @@ class NumberGameController extends Controller
             case 0:
                 $outputText .= '<br />' . $this::VICTORY_TEXT;
                 $result['victoryFlag'] = true;
+                $request->session()->put('gameFinishFlag', true);
                 break;
             case 1:
                 $outputText .= ' (hot)';
@@ -93,7 +94,12 @@ class NumberGameController extends Controller
         if($diff != 0 && $attemptsMade >= 3){
             $outputText .= '<br />' . $this::GAME_OVER_TEXT . $request->session()->get('correctNumber');
             $result['gameOverFlag'] = true;
+            $request->session()->put('gameFinishFlag', true);
         }
+
+        $pastGuesses = $request->session()->get('pastGuesses',[]);
+        array_push($pastGuesses, $outputText);
+        $request->session()->put('pastGuesses', $pastGuesses);
 
         $result['outputText'] = $outputText;
 
@@ -104,11 +110,8 @@ class NumberGameController extends Controller
 
         $request->session()->put('correctNumber', rand(1,10));
         $request->session()->put('attemptsMade', 0);
+        $request->session()->put('pastGuesses', []);
+        $request->session()->put('gameFinishFlag', false);
     }
 
-    public function prettyNumber($number){
-
-
-
-    }
 }

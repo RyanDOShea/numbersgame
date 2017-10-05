@@ -49,13 +49,17 @@
         <form action="#">
             <meta name="csrf-token" content="{{ csrf_token() }}">
             <label>Enter a guess </label>
-            <input type="number" id="number_guess" min="1" max="10"><input type="button" value="Guess it" id="guess_button">
+            <input type="number" id="number_guess" min="1" max="10">
+            <input type="button" value="Guess it" id="guess_button" @if($session['gameFinishFlag']) disabled @endif)>
         </form>
     </p>
-
-
+    
 
     <ul id="game_guesses">
+
+        @foreach($session['pastGuesses'] as $guessText)
+            <li>{!!$guessText!!}</li>
+        @endforeach
 
     </ul>
 
@@ -71,7 +75,7 @@
         var guess = parseInt($("#number_guess").val());
 
         if(guess > 10 || guess < 1){
-            alert('Please Enter a number from 1 to 10');
+            alert('Please enter a number from 1 to 10');
             $('#number_guess').val('').focus();
             return;
         }
