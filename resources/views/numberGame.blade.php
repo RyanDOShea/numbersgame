@@ -40,10 +40,6 @@
 
 <div id="app">
 
-    @php
-    //dd($session);
-    @endphp
-
     <p>
         I am thinking of a number from 1 to 10. <br />
         You must guess what it is in three tries.<br />
@@ -53,7 +49,7 @@
         <form action="#">
             <meta name="csrf-token" content="{{ csrf_token() }}">
             <label>Enter a guess </label>
-            <input type="number" id="number_guess"><input type="button" value="Guess it" id="guess_button">
+            <input type="number" id="number_guess" min="1" max="10"><input type="button" value="Guess it" id="guess_button">
         </form>
     </p>
 
@@ -71,6 +67,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 <script type="text/javascript">
     $("#guess_button").bind("click", function(){
+
+        var guess = parseInt($("#number_guess").val());
+
+        if(guess > 10 || guess < 1){
+            alert('Please Enter a number from 1 to 10');
+            $('#number_guess').val('').focus();
+            return;
+        }
 
         $.ajaxSetup({
             headers: {
@@ -90,6 +94,8 @@
                 //do stuff like replacing bits of the text
 
                 $('#game_guesses').append('<li>' + result.outputText +'</li>');
+                $('#number_guess').val('').focus();
+
             },
             error: function(errorMessage){
                 //console.log(errorMessage.responseJSON.errorMessage);
