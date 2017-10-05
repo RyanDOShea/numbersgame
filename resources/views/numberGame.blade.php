@@ -91,14 +91,16 @@
             dataType: "json",
 
             success: function(result){
-                //do stuff like replacing bits of the text
 
                 $('#game_guesses').append('<li>' + result.outputText +'</li>');
+
+                if(result.hasOwnProperty('victoryFlag') || result.hasOwnProperty('gameOverFlag')){
+                    $('#guess_button').prop('disabled',true);
+                }
                 $('#number_guess').val('').focus();
 
             },
             error: function(errorMessage){
-                //console.log(errorMessage.responseJSON.errorMessage);
                 alert(errorMessage.responseJSON.errorMessage);
             },
         });
@@ -120,10 +122,10 @@
             data: [],
 
             success: function(){
-                //do stuff like replacing bits of the text
-                location.reload(); // reset the game completely
 
-                //if we want to reset the game without reloading the page then we'd have to use JS to clear the guesses
+                $('#game_guesses').empty();
+                $('#guess_button').prop('disabled',false);
+
             },
             error: function(){
                 //do other stuff
