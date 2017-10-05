@@ -4,6 +4,7 @@
 
 - Install composer (https://getcomposer.org/)
 - run 'composer install' on root directory
+- do php artisan key:generate
 - point your web browser the the root_directory/public
 
 If permissions issue arise, set your apache user (www-data) to own the root_directory/storage and root_directory/bootstrap
