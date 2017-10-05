@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class NumberGameController extends Controller
 {
 
-    const VICTORYTEXT = 'Right! You have won the game.';
+    const VICTORY_TEXT = 'Right! You have won the game.';
+    const GAME_OVER_TEXT = 'Sorry, you lose. The correct number was ';
 
-    const PRETTYNUMBER = [
+    const PRETTY_NUMBER = [
         '1' => 'first',
         '2' => 'second',
         '3' => 'last'
@@ -30,11 +32,17 @@ class NumberGameController extends Controller
 
     public function makeGuess(Request $request){
 
-        $guess = $request->input('guess') ?? null;
+        $validator = Validator::make($request->all(), [
+            'guess' => 'required|integer|between:0,11'
+        ]);
 
-        if($guess == null){
-            return response()->json(['errorMessage' => 'No guess given'],400);
+        if($validator->fails()){
+            return response()->json([
+                'errorMessage' => 'Please Enter a number from 1 to 10'
+            ],400);
         }
+
+        $guess = $request->input('guess') ?? null;
 
         $attemptsMade = $request->session()->get('attemptsMade') + 1;
 
@@ -42,17 +50,34 @@ class NumberGameController extends Controller
             return response()->json(['errorMessage' => 'Too Many Guesses'],400);
         }
 
-        $guess = (int)$guess;
-        $diff = $guess - $request->session()->get('correctNumber');
-
         $request->session()->put('attemptsMade', $attemptsMade);
 
+        $result = $this->processGameState($request, $guess, $attemptsMade);
 
-        $outputText = 'Your ' . $this::PRETTYNUMBER[$attemptsMade] . ' guess is: ' . $guess;
+        return response()->json($result);
+    }
+
+    /**
+     * @param $request
+     * @param $guess
+     * @param $attemptsMade
+     * @return \Illuminate\Support\Collection
+     *
+     * Logic to take game input, and generate the output to return to user.
+     */
+    public function processGameState($request, $guess, $attemptsMade){
+
+        $result = collect();
+
+        $guess = (int)$guess;
+        $diff = abs($guess - $request->session()->get('correctNumber'));
+
+        $outputText = 'Your ' . $this::PRETTY_NUMBER[$attemptsMade] . ' guess is: ' . $guess;
 
         switch ($diff){
             case 0:
-                $outputText .= '<br />' . $this::VICTORYTEXT;
+                $outputText .= '<br />' . $this::VICTORY_TEXT;
+                $result['victoryFlag'] = true;
                 break;
             case 1:
                 $outputText .= ' (hot)';
@@ -65,11 +90,14 @@ class NumberGameController extends Controller
                 break;
         }
 
-        $result = collect([
-                'outputText' => $outputText,
-            ]);
+        if($diff != 0 && $attemptsMade >= 3){
+            $outputText .= '<br />' . $this::GAME_OVER_TEXT . $request->session()->get('correctNumber');
+            $result['gameOverFlag'] = true;
+        }
 
-        return response()->json($result);
+        $result['outputText'] = $outputText;
+
+        return $result;
     }
 
     public function resetGame(Request $request){
